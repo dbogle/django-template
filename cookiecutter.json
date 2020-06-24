@@ -4,7 +4,8 @@
   "description": "A really cool project",
   "author": "Dave",
   "project_url": "mycoolproject.com",
-  "email": "test@test.com",
+  "email": "n",
+  "email_addr": "test@test.com",
   "timezone": "EST",
   "database": "sqlite3"
 }

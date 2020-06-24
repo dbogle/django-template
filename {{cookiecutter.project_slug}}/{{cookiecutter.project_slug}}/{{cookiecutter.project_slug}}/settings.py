@@ -24,7 +24,7 @@ SECRET_KEY = os.environ.get(
     '{{cookiecutter.project_slug}}_SECRET_KEY', '!)=$%zf)1a_dren+231(^*q8uy#9hm)6hgt_&*7=g#@lhny2*t')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if '{{cookiecutter.project_slug}}_DEBUG' in os.environ else False
+DEBUG = True if '{{cookiecutter.project_slug | title}}_DEBUG' in os.environ else False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1',
                  '{{cookiecutter.project_url}}', 'www.{{cookiecutter.project_url}}']
@@ -57,8 +57,50 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = '{{cookiecutter.project_slug}}.urls'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        # Include the default Django email handler for errors
+        # This is what you'd get without configuring logging at all.
+        # 'mail_admins': {
+        #     'class': 'django.utils.log.AdminEmailHandler',
+        #     'level': 'ERROR',
+        #      # But the emails are plain text by default - HTML is nicer
+        #     'include_html': True,
+        # },
+        # Log to a text file that can be rotated by logrotate
+        'logfile': {
+            'class': 'logging.handlers.WatchedFileHandler',
+            'filename': './lifecoach.log'
+        },
+    },
+    'loggers': {
+        # Again, default Django configuration to email unhandled exceptions
+        # 'django.request': {
+        #     'handlers': ['mail_admins'],
+        #     'level': 'ERROR',
+        #     'propagate': True,
+        # },
+        # Might as well log any errors anywhere else in Django
+        'django': {
+            'handlers': ['logfile'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        # Your own app - this assumes all your logger names start with "myapp."
+        'lifecoach': {
+            'handlers': ['logfile'],
+            'level': 'WARNING',  # Or maybe INFO or DEBUG
+            'propagate': False
+        },
+    },
+}
 
+ROOT_URLCONF = '{{cookiecutter.project_slug}}.urls'
+REGISTRATION_SALT = os.environ.get(
+    '{{cookiecutter.project_slug|title}}_SALT', 'jfndjsak;uy849p3qhjkfds;ahjj')
+ACCOUNT_ACTIVATION_DAYS = 7
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -77,6 +119,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = '{{cookiecutter.project_slug}}.wsgi.application'
 
+# Email settings
+{%- if cookiecutter.email == 'y' %}
+# EMAIL_HOST = 'smtp.mailgun.org'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'postmaster@{{cookiecutter.project_url}}'
+# EMAIL_HOST_PASSWORD = os.environ.get('MAILGUN_PASSWORD', None)
+# EMAIL_USE_TLS = True
+# DEFAULT_FROM_EMAIL = 'Help@{{cookiecutter.project_url}}'
+{%- endif %}
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
