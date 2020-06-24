@@ -1,0 +1,50 @@
+{% raw %}
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<head>
+  <link href="{% static 'css/signin.css' %}" rel="stylesheet">
+</head>
+
+<div class="container mainContainer">
+  <h2>Sign up</h2>
+  {% for error in form.non_field_errors %}
+  <div class="alert alert-danger">
+    <strong>{{ error|escape }}</strong>
+  </div>
+  {% endfor %}
+
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form-group">
+      <label for="id_username">{{field.label}}</label>
+      {% if 'password' in field.name %}
+      <input type="password" class="form-control" name="{{field.name}}" required id="id_{{field.name}}">
+      {% elif 'email' in field.name %}
+      <input type="email" class="form-control" name="{{field.name}}" maxlength="254" required id="id_{{field.name}}">
+      {% else %}
+      <input type="text" class="form-control" name="{{field.name}}" maxlength="150" required id="id_{{field.name}}">
+      {% endif %}
+
+      {% if field.help_text %}
+      <small style="color: grey">{{ field.help_text }}</small>
+      {% endif %}
+    </div>
+
+    <!-- Show errors -->
+
+    {% for error in field.errors %}
+    <div class="alert alert-danger">
+      <strong>{{ error }}</strong>
+    </div>
+    {% endfor %}
+    </p>
+    {% endfor %}
+    <button class="btn btn-primary btn-lg" type="submit">Sign up</button>
+    <input type="hidden" name="next" value="{{ next }}">
+  </form>
+</div>
+{% endblock %}
+{% endraw %}
