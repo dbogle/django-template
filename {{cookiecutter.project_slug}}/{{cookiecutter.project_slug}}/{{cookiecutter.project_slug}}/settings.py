@@ -21,10 +21,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get(
-    '{{cookiecutter.project_slug}}_SECRET_KEY', '!)=$%zf)1a_dren+231(^*q8uy#9hm)6hgt_&*7=g#@lhny2*t')
+    '{{cookiecutter.project_slug.upper()}}_SECRET_KEY', '!)=$%zf)1a_dren+231(^*q8uy#9hm)6hgt_&*7=g#@lhny2*t')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if '{{cookiecutter.project_slug | title}}_DEBUG' in os.environ else False
+DEBUG = True if '{{cookiecutter.project_slug.upper()}}_DEBUG' in os.environ else False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1',
                  '{{cookiecutter.project_url}}', 'www.{{cookiecutter.project_url}}']
@@ -99,7 +99,7 @@ LOGGING = {
 
 ROOT_URLCONF = '{{cookiecutter.project_slug}}.urls'
 REGISTRATION_SALT = os.environ.get(
-    '{{cookiecutter.project_slug|title}}_SALT', 'jfndjsak;uy849p3qhjkfds;ahjj')
+    '{{cookiecutter.project_slug.upper()}}_SALT', 'jfndjsak;uy849p3qhjkfds;ahjj')
 ACCOUNT_ACTIVATION_DAYS = 7
 TEMPLATES = [
     {
@@ -120,29 +120,54 @@ TEMPLATES = [
 WSGI_APPLICATION = '{{cookiecutter.project_slug}}.wsgi.application'
 
 # Email settings
-{%- if cookiecutter.email == 'y' %}
-# EMAIL_HOST = 'smtp.mailgun.org'
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = 'postmaster@{{cookiecutter.project_url}}'
-# EMAIL_HOST_PASSWORD = os.environ.get('MAILGUN_PASSWORD', None)
-# EMAIL_USE_TLS = True
-# DEFAULT_FROM_EMAIL = 'Help@{{cookiecutter.project_url}}'
-{%- endif %}
+{%- if cookiecutter.email == 'mailgun' -%}
+EMAIL_HOST = 'smtp.mailgun.org'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = ''  os.environ.get('MAILGUN_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('MAILGUN_PASSWORD')
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'Help@{{cookiecutter.project_url}}'
+{%- elif cookiecutter.email == 'twilio' -%}
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('SENDGRID_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY')
+{%- else -%}
+{% endif %}
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# TODO: Add support for postgres using cookie cutter
-{%- if cookiecutter.database == 'postgres' %}
-# Do postgres config
-{%- else %}
+{% if cookiecutter.database == 'postgres' %}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ['POSTGRES_NAME'],
+        'USER': os.environ['POSTGRES_USER'],
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        'HOST': os.environ.get('POSTGRES_HOST', ''),
+        'PORT': os.environ.get('POSTGRES_PORT', ''),
+    }
+}
+{% elif cookiecutter.database == 'mongo' %}
+DATABASES = {
+    'default': {
+        'ENGINE': 'djongo',
+        'NAME': os.environ['MONGODB_NAME'],
+        'USER': os.environ['MONGODB_USERNAME'],
+        'PASSWORD': os.environ['MONGODB_PASSWORD'],
+        'AUTH_SOURCE': os.environ['MONGODB_AUTH_SOURCE']
+    }
+}
+{% else %}
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-{%- endif %}
+{% endif %}
 
 
 # Password validation
@@ -191,4 +216,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/accounts/login'
+LOGOUT_REDIRECT_URL = '/'

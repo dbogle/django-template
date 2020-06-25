@@ -4,8 +4,10 @@
   "description": "A really cool project",
   "author": "Dave",
   "project_url": "mycoolproject.com",
-  "email": "n",
+  "email": ["none", "twilio", "mailgun"],
   "email_addr": "test@test.com",
   "timezone": "EST",
-  "database": "sqlite3"
+  "database": ["sqlite3", "mongodb", "postgres"],
+  "primary_color": "#000000",
+  "secondary_color": "#111111"
 }

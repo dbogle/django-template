@@ -1,0 +1,18 @@
+:root {
+    --primary-color: {{cookiecutter.primary_color}};
+    --secondary-color: {{cookiecutter.secondary_color}};
+}
+.custom-nav {
+    color: white;
+    background: var(--primary-color)!important;
+}
+
+.custom-button {
+    background-color: var(--primary-color)!important;
+    border-color: var(--primary-color)!important;
+}
+
+.custom-submit-input {
+    background-color: var(--primary-color)!important;
+    border-color: var(--primary-color)!important;  
+}
