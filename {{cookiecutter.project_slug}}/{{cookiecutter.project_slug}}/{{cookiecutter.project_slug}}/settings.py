@@ -72,7 +72,7 @@ LOGGING = {
         # Log to a text file that can be rotated by logrotate
         'logfile': {
             'class': 'logging.handlers.WatchedFileHandler',
-            'filename': './lifecoach.log'
+            'filename': './{{cookiecutter.project_sluf}}.log'
         },
     },
     'loggers': {
